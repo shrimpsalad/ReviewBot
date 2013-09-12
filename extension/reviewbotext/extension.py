@@ -14,6 +14,7 @@ from reviewbotext.models import ReviewBotTool
 from reviewbotext.resources import review_bot_review_resource, \
                                    review_bot_tool_resource
 
+from reviewboard_api import ReviewBoardServer
 
 class ReviewBotExtension(Extension):
     """An extension for communicating with Review Bot"""
@@ -55,22 +56,31 @@ class ReviewBotExtension(Extension):
             'session': self._login_user(self.settings['user']),
             'url': self._rb_url(),
         }
+        #hack
+        rb_server = ReviewBoardServer("http://reviewboard-dev.wjavins.west.isilon.com","admin","a")
+        review_list = rb_server.get_review(request_payload['review_request_id'])
+        review = False
+
+        for reviewer in review_list['target_people']:
+            if reviewer['title'] == 'reviewbot':
+                review = True
+
         tools = ReviewBotTool.objects.filter(enabled=True,
                                              run_automatically=True)
+        if review:
+            for tool in tools:
+                review_settings['ship_it'] = tool.ship_it
+                review_settings['comment_unmodified'] = tool.comment_unmodified
+                review_settings['open_issues'] = tool.open_issues
+                payload['review_settings'] = review_settings
 
-        for tool in tools:
-            review_settings['ship_it'] = tool.ship_it
-            review_settings['comment_unmodified'] = tool.comment_unmodified
-            review_settings['open_issues'] = tool.open_issues
-            payload['review_settings'] = review_settings
-
-            try:
-                self.celery.send_task(
+                try:
+                    self.celery.send_task(
                     "reviewbot.tasks.ProcessReviewRequest",
                     [payload, tool.tool_settings],
                     queue='%s.%s' % (tool.entry_point, tool.version))
-            except:
-                raise
+                except:
+                    raise
 
     def _login_user(self, user_id):
         """
