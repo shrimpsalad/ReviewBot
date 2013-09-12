@@ -1,9 +1,6 @@
 import cookielib
 import mimetools
-import re
 import json
-import subprocess
-import sys
 import urllib2
 import os
 from urlparse import urljoin

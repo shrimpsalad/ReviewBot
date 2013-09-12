@@ -21,7 +21,6 @@ logger = get_task_logger("WORKER")
 @celery.task(ignore_result=True)
 def ProcessReviewRequest(payload, tool_settings):
     """Execute an automated review on a review request."""
-    payload['url'] = u'http://reviewboard-dev.wjavins.west.isilon.com'
     routing_key = ProcessReviewRequest.request.delivery_info['routing_key']
     route_parts = routing_key.partition('.')
     tool_ep = route_parts[0]
@@ -101,7 +100,6 @@ def update_tools_list(panel, payload):
     logging.info("Request to refresh installed tools from '%s'" %
         payload['url'])
 
-    payload['url'] = u'http://reviewboard-dev.wjavins.west.isilon.com'
     logging.info("Iterating Tools")
     tools = []
 

@@ -10,10 +10,9 @@ class Tool(object):
     description = ""
     version = "1"
     options = []
-    tool_ran = False
 
     def __init__(self):
-        pass
+        tool_ran = False
 
     def check_dependencies(self):
         """Verify the tool's dependencies are installed.
