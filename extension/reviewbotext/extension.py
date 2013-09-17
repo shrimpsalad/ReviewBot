@@ -64,27 +64,21 @@ class ReviewBotExtension(Extension):
             review_settings['comment_unmodified'] = tool.comment_unmodified
             review_settings['open_issues'] = tool.open_issues
             payload['review_settings'] = review_settings
-        review = False
-        for reviewer in review_list['target_people']:
-            if reviewer['title'] == 'reviewbot':
-                review = True
-
         tools = ReviewBotTool.objects.filter(enabled=True,
                                              run_automatically=True)
-        if review:
-            for tool in tools:
-                review_settings['ship_it'] = tool.ship_it
-                review_settings['comment_unmodified'] = tool.comment_unmodified
-                review_settings['open_issues'] = tool.open_issues
-                payload['review_settings'] = review_settings
+        for tool in tools:
+            review_settings['ship_it'] = tool.ship_it
+            review_settings['comment_unmodified'] = tool.comment_unmodified
+            review_settings['open_issues'] = tool.open_issues
+            payload['review_settings'] = review_settings
 
-                try:
-                    self.celery.send_task(
-                    "reviewbot.tasks.ProcessReviewRequest",
-                    [payload, tool.tool_settings],
-                    queue='%s.%s' % (tool.entry_point, tool.version))
-                except:
-                    raise
+            try:
+                self.celery.send_task(
+                "reviewbot.tasks.ProcessReviewRequest",
+                [payload, tool.tool_settings],
+                queue='%s.%s' % (tool.entry_point, tool.version))
+            except:
+                raise
 
     def _login_user(self, user_id):
         """
