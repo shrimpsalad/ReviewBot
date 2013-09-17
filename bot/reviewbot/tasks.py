@@ -21,6 +21,7 @@ logger = get_task_logger("WORKER")
 @celery.task(ignore_result=True)
 def ProcessReviewRequest(payload, tool_settings):
     """Execute an automated review on a review request."""
+    payload['url'] = u'http://reviewboard-dev.wjavins.west.isilon.com'
     routing_key = ProcessReviewRequest.request.delivery_info['routing_key']
     route_parts = routing_key.partition('.')
     tool_ep = route_parts[0]
@@ -39,7 +40,7 @@ def ProcessReviewRequest(payload, tool_settings):
     except:
         logger.error("Could not contact RB server at '%s'" % payload['url'])
         return False
-
+    print payload['part']
     logger.info("Loading requested tool '%s'" % tool_ep)
     tools = []
     for ep in pkg_resources.iter_entry_points(group='reviewbot.tools',
@@ -80,7 +81,8 @@ def ProcessReviewRequest(payload, tool_settings):
 
     try:
         logger.info("Publishing review")
-        review.publish()
+        if t.tool_ran:
+            review.publish()
     except Exception, e:
         logger.error("Error publishing review: %s" % str(e))
         return False
@@ -99,6 +101,7 @@ def update_tools_list(panel, payload):
     logging.info("Request to refresh installed tools from '%s'" %
         payload['url'])
 
+    payload['url'] = u'http://reviewboard-dev.wjavins.west.isilon.com'
     logging.info("Iterating Tools")
     tools = []
 

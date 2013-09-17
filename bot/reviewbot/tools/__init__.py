@@ -10,6 +10,7 @@ class Tool(object):
     description = ""
     version = "1"
     options = []
+    tool_ran = False
 
     def __init__(self):
         pass
@@ -35,6 +36,8 @@ class Tool(object):
         self.ignored_files = set()
 
         self.handle_files(review.files)
+        if len(self.processed_files) > 0:
+            self.tool_ran = True
         self.post_process(review)
 
     def handle_files(self, files):

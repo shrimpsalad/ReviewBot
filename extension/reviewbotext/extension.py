@@ -55,9 +55,9 @@ class ReviewBotExtension(Extension):
             'session': self._login_user(self.settings['user']),
             'url': self._rb_url(),
         }
+
         tools = ReviewBotTool.objects.filter(enabled=True,
                                              run_automatically=True)
-
         for tool in tools:
             review_settings['ship_it'] = tool.ship_it
             review_settings['comment_unmodified'] = tool.comment_unmodified

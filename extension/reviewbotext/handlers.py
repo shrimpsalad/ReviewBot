@@ -18,7 +18,7 @@ class SignalHandlers(object):
     def _review_request_published(self, **kwargs):
         review_request = kwargs.get('review_request')
         review_request_id = review_request.get_display_id()
-
+        review_part = review_request.target_people.all()
         # Get the changes from the change description.
         changedesc = kwargs.get('changedesc')
 
@@ -50,8 +50,13 @@ class SignalHandlers(object):
             'new': is_new,
             'fields_changed': fields_changed,
             'has_diff': has_diff,
+  
         }
+        review = False
+        for person in review_part:
+            if person.username == 'reviewbot':
+               review = True 
 
-        if has_diff:
+        if has_diff and review:
             request_payload['diff_revision'] = diff_revision
             self.extension.notify(request_payload)
