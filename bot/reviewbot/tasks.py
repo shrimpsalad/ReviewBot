@@ -40,7 +40,6 @@ def ProcessReviewRequest(payload, tool_settings):
     except:
         logger.error("Could not contact RB server at '%s'" % payload['url'])
         return False
-    print payload['part']
     logger.info("Loading requested tool '%s'" % tool_ep)
     tools = []
     for ep in pkg_resources.iter_entry_points(group='reviewbot.tools',
