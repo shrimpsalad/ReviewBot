@@ -64,13 +64,6 @@ class ReviewBotExtension(Extension):
             review_settings['comment_unmodified'] = tool.comment_unmodified
             review_settings['open_issues'] = tool.open_issues
             payload['review_settings'] = review_settings
-        tools = ReviewBotTool.objects.filter(enabled=True,
-                                             run_automatically=True)
-        for tool in tools:
-            review_settings['ship_it'] = tool.ship_it
-            review_settings['comment_unmodified'] = tool.comment_unmodified
-            review_settings['open_issues'] = tool.open_issues
-            payload['review_settings'] = review_settings
 
             try:
                 self.celery.send_task(
