@@ -56,7 +56,6 @@ class ReviewBotExtension(Extension):
             'session': self._login_user(self.settings['user']),
             'url': self._rb_url(),
         }
-<<<<<<< HEAD
 
         tools = ReviewBotTool.objects.filter(enabled=True,
                                              run_automatically=True)
@@ -65,11 +64,10 @@ class ReviewBotExtension(Extension):
             review_settings['comment_unmodified'] = tool.comment_unmodified
             review_settings['open_issues'] = tool.open_issues
             payload['review_settings'] = review_settings
-
+        review = False
         for reviewer in review_list['target_people']:
             if reviewer['title'] == 'reviewbot':
                 review = True
->>>>>>> bb9fcee64ff2f1f5243b70479315c61c478c555c
 
         tools = ReviewBotTool.objects.filter(enabled=True,
                                              run_automatically=True)
