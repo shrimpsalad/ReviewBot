@@ -71,7 +71,6 @@ class ReviewBotExtension(Extension):
                 review_settings['comment_unmodified'] = tool.comment_unmodified
                 review_settings['open_issues'] = tool.open_issues
                 payload['review_settings'] = review_settings
-                
                 try:
                     self.celery.send_task(
                     "reviewbot.tasks.ProcessReviewRequest",
