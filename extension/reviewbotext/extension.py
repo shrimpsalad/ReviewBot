@@ -14,8 +14,6 @@ from reviewbotext.models import ReviewBotTool
 from reviewbotext.resources import review_bot_review_resource, \
                                    review_bot_tool_resource
 
-from reviewboard_api import ReviewBoardServer
-
 class ReviewBotExtension(Extension):
     """An extension for communicating with Review Bot"""
     is_configurable = True
