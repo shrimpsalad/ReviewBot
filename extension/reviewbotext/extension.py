@@ -56,22 +56,31 @@ class ReviewBotExtension(Extension):
             'session': self._login_user(self.settings['user']),
             'url': self._rb_url(),
         }
+        #if reviewbot user is not required
+        if  not self.settings['rb_reviewer']:
+            review = True
+        #if reviewbot user is required and reviewbot reviewer is present
+        elif request_payload['reviewbot_user']:
+            review = True
+        else:
+            review = False
 
         tools = ReviewBotTool.objects.filter(enabled=True,
                                              run_automatically=True)
-        for tool in tools:
-            review_settings['ship_it'] = tool.ship_it
-            review_settings['comment_unmodified'] = tool.comment_unmodified
-            review_settings['open_issues'] = tool.open_issues
-            payload['review_settings'] = review_settings
-
-            try:
-                self.celery.send_task(
-                "reviewbot.tasks.ProcessReviewRequest",
-                [payload, tool.tool_settings],
-                queue='%s.%s' % (tool.entry_point, tool.version))
-            except:
-                raise
+        if review:
+            for tool in tools:
+                review_settings['ship_it'] = tool.ship_it
+                review_settings['comment_unmodified'] = tool.comment_unmodified
+                review_settings['open_issues'] = tool.open_issues
+                payload['review_settings'] = review_settings
+                
+                try:
+                    self.celery.send_task(
+                    "reviewbot.tasks.ProcessReviewRequest",
+                    [payload, tool.tool_settings],
+                    queue='%s.%s' % (tool.entry_point, tool.version))
+                except:
+                    raise
 
     def _login_user(self, user_id):
         """

@@ -45,18 +45,19 @@ class SignalHandlers(object):
             else:
                 has_diff = False
 
-        request_payload = {
-            'review_request_id': review_request_id,
-            'new': is_new,
-            'fields_changed': fields_changed,
-            'has_diff': has_diff,
-  
-        }
         review = False
         for person in review_part:
             if person.username == 'reviewbot':
                review = True 
 
-        if has_diff and review:
+        request_payload = {
+            'review_request_id': review_request_id,
+            'new': is_new,
+            'fields_changed': fields_changed,
+            'has_diff': has_diff,
+            'reviewbot_user': review  
+        }
+
+        if has_diff:
             request_payload['diff_revision'] = diff_revision
             self.extension.notify(request_payload)

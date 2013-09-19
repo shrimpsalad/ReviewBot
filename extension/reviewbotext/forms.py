@@ -22,6 +22,11 @@ class ReviewBotSettingsForm(SettingsForm):
     user = forms.IntegerField(
         label=_("User id"),
         help_text=_("The id of the user account Review Bot will use."))
+    rb_reviewer = forms.BooleanField(
+        required=False,
+        label=_("ReviewBot as Reviewer"),
+        help_text=_("Require user to put Reviewbot as a reviewer "
+                    "to run code analysis"))
 
 
 class ReviewBotToolForm(forms.ModelForm):
